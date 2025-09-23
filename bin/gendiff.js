@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
-const { program } = require('commander');
+import { Command } from 'commander';
+
+const program = new Command();
 
 program
   .name('gendiff')
