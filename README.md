@@ -1,7 +1,7 @@
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/Hante-St/frontend-project-46/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Hante-St/frontend-project-46/actions)
 
-Description
+Description:
 Compares two files for differences. 
 
 Supports the following formats:
@@ -11,7 +11,7 @@ YAML/YML
 Installation:
 make install
 
-Usage
+Usage:
 node gendiff 'path-to-file1' 'path-to-file2'
 
 Example of a genDiff work:
