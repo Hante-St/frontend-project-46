@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "[![Actions Status](https://github.com/Hante-St/frontend-project-46/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Hante-St/frontend-project-46/actions)",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +18,7 @@
   },
   "homepage": "https://github.com/Hante-St/frontend-project-46#readme",
   "dependencies": {
-    "commander": "^14.0.1"
+    "commander": "^14.0.1",
+    "js-yaml": "^4.1.0"
   }
 }
