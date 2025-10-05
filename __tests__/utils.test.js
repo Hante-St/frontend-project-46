@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'url';
-import { describe, test, expect } from '@jest/globals';
+import { test, expect } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';
 import { genDiff } from '../src/utils.js';
@@ -10,7 +10,6 @@ const __dirname = path.dirname(__filename);
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFixture = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
 
-const expectedOutput = readFixture('expected-stylish.txt');
 test.each([
   ['json', 'file1.json', 'file2.json', readFixture('expected-stylish.txt')],
 ])('generate diff between %s files', (extension, file1, file2, expectedOutput) => {
