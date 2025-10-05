@@ -10,14 +10,14 @@ const __dirname = path.dirname(__filename);
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFixture = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
 
+const expectedOutput = readFixture('expected-stylish.txt');
 test.each([
-  ['json', 'file1.json', 'file2.json', 'expected-stylish.txt']
-])('generate diff between %s files', (extension, file1, file2, expectedFile) => {
-  const expected = readFixture(expectedFile);
+  ['json', 'file1.json', 'file2.json', readFixture('expected-stylish.txt')],
+])('generate diff between %s files', (extension, file1, file2, expectedOutput) => {
   const result = genDiff(
     getFixturePath(file1),
     getFixturePath(file2),
     'stylish'
-  );
-  expect(result).toEqual(expected);
+  )
+expect(result).toEqual(expectedOutput)
 });

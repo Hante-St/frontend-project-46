@@ -5,9 +5,4 @@
 - timeout: 50
 + timeout: 20
 + verbose: true
-The most similar commands are
-        am
-        gc
-        p4
-        rm
 }
