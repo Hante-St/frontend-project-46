@@ -21,8 +21,14 @@ make install
 Usage:
 node gendiff 'path-to-file1' 'path-to-file2'
 
-Example of a genDiff work:
-![example gendiff](images/example_gendiff.png)
+Example of a genDiff work (json):
+![example gendiff](images/example_json.png)
+
+Example of a genDiff work (yaml):
+![example gendiff](images/example_yaml.jpg)
+
+Example of a genDiff work (yml):
+![example gendiff](images/example_yml.jpg)
 
 Example of a tests work:
 ![example tests](images/example_tests.jpg)
