@@ -12,6 +12,8 @@ const readFixture = (filename) => fs.readFileSync(getFixturePath(filename), 'utf
 
 test.each([
   ['json', 'file1.json', 'file2.json', readFixture('expected-stylish.txt')],
+  ['yml', 'file1.yml', 'file2.yml', readFixture('expected-stylish.txt')],
+  ['yaml', 'file1.yaml', 'file2.yaml', readFixture('expected-stylish.txt')],
 ])('generate diff between %s files', (extension, file1, file2, expectedOutput) => {
   const result = genDiff(
     getFixturePath(file1),
