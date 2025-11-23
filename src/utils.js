@@ -9,8 +9,13 @@ const __dirname = dirname(__filename)
 const BASE_DIR = path.resolve(__dirname, '..', '__fixtures__')
 
 function readFile(filePath) {
-  const fullPath = path.resolve(BASE_DIR, filePath)
-  return fs.readFileSync(fullPath, 'utf-8')
+  try {
+    const fullPath = path.resolve(BASE_DIR, filePath)
+    return fs.readFileSync(fullPath, 'utf-8')
+  } catch (error) {
+    console.error(`Ошибка при чтении файла: ${filePath}`, error)
+    throw error
+  }
 }
 
 function getExtension(filename) {
