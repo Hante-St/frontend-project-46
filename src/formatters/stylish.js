@@ -1,41 +1,62 @@
-import has from 'lodash/has.js'
 
-function generateDiff(obj1, obj2) {
+function formStylish(diffArray, depth = 1) {
+  const indentSize = 4
+  const currentIndent = ' '.repeat(indentSize * depth)
 
-  const keys = Array.from(new Set([...Object.keys(obj1), ...Object.keys(obj2)])).sort();
+  const formatValue = (value, depthLevel) => {
+    if (typeof value !== 'object' || value === null) {
+      return String(value)
+    }
 
-  const lines = keys.flatMap(key => {
-    const hasKey1 = has(obj1, key);
-    const hasKey2 = has(obj2, key);
-    const val1 = obj1[key];
-    const val2 = obj2[key];
+    const lines = Object.entries(value).map(
+      ([key, val]) => `${' '.repeat(indentSize * (depthLevel))}${key}: ${formatValue(val, depthLevel + 1)}`
+    )
+    return `{\n${lines.join('\n')}\n${' '.repeat(indentSize * (depthLevel - 1))}}`
+  };
 
-    const cases = [
-      {
-        condition: hasKey1 && !hasKey2,
-        result: `- ${key}: ${val1}`,
-      },
-      {
-        condition: !hasKey1 && hasKey2,
-        result: `+ ${key}: ${val2}`,
-      },
-      {
-        condition: hasKey1 && hasKey2 && val1 === val2,
-        result: `  ${key}: ${val1}`,
-      },
-      {
-        condition: hasKey1 && hasKey2 && val1 !== val2,
-        result: [`- ${key}: ${val1}`, `+ ${key}: ${val2}`],
-      },
-    ];
+  const lines = diffArray.flatMap(item => {
+    const { key, status, value, newValue } = item
 
-    const matchedCases = cases.filter(c => c.condition);
-    return matchedCases.flatMap(c => (Array.isArray(c.result) ? c.result : [c.result]))
-  });
+    switch (status) {
+      case 'added':
+        if (typeof newValue === 'object' && newValue !== null) {
+          return [`+ ${key}: ${formatValue(newValue, depth + 1)}`]
+        }
+        return [`+ ${key}: ${newValue}`]
 
-  const diffString = `{\n${lines.join('\n')}\n}`;
+      case 'removed':
+        if (typeof value === 'object' && value !== null) {
+          return [`- ${key}: ${formatValue(value, depth + 1)}`]
+        }
+        return [`- ${key}: ${value}`]
 
-  return diffString;
+      case 'unchanged':
+        if (typeof value === 'object' && value !== null) {
+          return [`  ${key}: ${formatValue(value, depth + 1)}`]
+        }
+        return [`  ${key}: ${value}`]
+
+      case 'changed':
+        const linesChanged = []
+        if (typeof value === 'object' && value !== null) {
+          linesChanged.push(`- ${key}: ${formatValue(value, depth + 1)}`)
+        } else {
+          linesChanged.push(`- ${key}: ${value}`)
+        }
+
+        if (typeof newValue === 'object' && newValue !== null) {
+          linesChanged.push(`+ ${key}: ${formatValue(newValue, depth + 1)}`)
+        } else {
+          linesChanged.push(`+ ${key}: ${newValue}`)
+        }
+        return linesChanged
+
+      default:
+        return []
+    }
+  })
+
+  return `{\n${lines.join('\n')}\n${' '.repeat(indentSize * (depth - 1))}}`
 }
 
-export default generateDiff
+export default formStylish
