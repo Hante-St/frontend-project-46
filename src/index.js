@@ -1,9 +1,9 @@
-import formStylish from './formatters/stylish.js'
+import makeFormat from './formatters/index.js'
 import generateDiff from './generateDiff.js'
 import { readFile, getExtension } from './utils.js'
 import parse from './parser.js'
 
-function genDiff(filepath1, filepath2, format = 'stylish') {
+function genDiff(filepath1, filepath2, format) {
   const dataFile1 = readFile(filepath1)
   const dataFile2 = readFile(filepath2)
   const extension1 = getExtension(filepath1)
@@ -14,12 +14,12 @@ function genDiff(filepath1, filepath2, format = 'stylish') {
 
   const objWithDiff = generateDiff(obj1, obj2)
 
-  const result = formStylish(objWithDiff)
+  const result = makeFormat(objWithDiff, format)
 
   return result
 }
 
-const diffResult = genDiff('file1.json', 'file2.json')
+const diffResult = genDiff('file1.json', 'file2.json', 'plain')
 console.log(diffResult)
 
 export default genDiff
