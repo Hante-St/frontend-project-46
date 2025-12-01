@@ -1,7 +1,7 @@
 import has from 'lodash/has.js'
 
 function generateDiff(obj1, obj2) {
-  const keys = Array.from(new Set([...Object.keys(obj1), ...Object.keys(obj2)])).sort()
+  const keys = [...new Set([...Object.keys(obj1), ...Object.keys(obj2)])].sort((a, b) => a.localeCompare(b))
 
   const result = keys.map(key => {
     const hasKey1 = has(obj1, key)
@@ -24,6 +24,7 @@ function generateDiff(obj1, obj2) {
     return null
   })
   
+  result.sort((a, b) => a.key.localeCompare(b.key))
   return result
 }
 
