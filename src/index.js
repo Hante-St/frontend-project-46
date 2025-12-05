@@ -14,12 +14,16 @@ function genDiff(filepath1, filepath2, format) {
 
   const objWithDiff = generateDiff(obj1, obj2)
 
+console.log('Тип objWithDiff:', typeof objWithDiff);
+console.log('Является ли массивом:', Array.isArray(objWithDiff));
+console.log('Объект:', objWithDiff);
+
   const result = makeFormat(objWithDiff, format)
 
   return result
 }
 
-const diffResult = genDiff('file1.json', 'file2.json', 'json')
+const diffResult = genDiff('file1.json', 'file2.json', 'plain')
 console.log(diffResult)
 
 export default genDiff
