@@ -19,7 +19,7 @@ function genDiff(filepath1, filepath2, format) {
   return result
 }
 
-const diffResult = genDiff('file1.json', 'file2.json', 'plain')
+const diffResult = genDiff('file1.json', 'file2.json', 'json')
 console.log(diffResult)
 
 export default genDiff

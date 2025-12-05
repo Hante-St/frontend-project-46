@@ -1,86 +1,89 @@
-const formatValue = (value) => {
-  if (value === null) return "null"
-  if (value === undefined) return "[complex value]"
-  if (typeof value === "boolean") return value.toString()
-  if (typeof value === "string") return `'${value}'`
-  if (Array.isArray(value) || (typeof value === "object" && value !== null))
-    return "[complex value]"
-  return value.toString()
-};
-function formPlain(diffArray, path = "") {
-  const lines = [];
+function formPlain(diffArray, path = '') {
+  const sortedDiff = [...diffArray].sort((a, b) => a.key.localeCompare(b.key))
+  const lines = []
 
-  const newLines = diffArray.flatMap((item) => { 
-    const propertyPath = path ? `${path}.${item.key}` : item.key;
+  const normalize = (val) => (typeof val === 'string' ? val.trim() : val)
+  const isEqual = (a, b) => {
+  const aNorm = normalize(a)
+  const bNorm = normalize(b)
+  return aNorm === bNorm
+}
 
-    const isComplexChange =
-      ["added", "removed", "changed"].includes(item.status) &&
-      ((typeof item.value === "object" && item.value !== null) ||
-        (typeof item.newValue === "object" && item.newValue !== null));
+  const formatValue = (value) => {
+    if (value === null) return 'null'
+    if (value === undefined) return 'undefined'
+    if (typeof value === 'boolean') return value.toString()
+    if (typeof value === 'string') return `'${value}'`
+    if (Array.isArray(value) || (typeof value === 'object' && value !== null))
+      return '[complex value]'
+    return value.toString()
+  };
+
+  for (const item of sortedDiff) {
+    const propertyPath = path ? `${path}.${item.key}` : item.key
+
+    const valueVal = item.value
+    const newVal = item.newValue
+
+    const isComplexObject =
+      (typeof valueVal === 'object' && valueVal !== null) ||
+      (typeof newVal === 'object' && newVal !== null)
+
+    const valuesAreEqual = isEqual(valueVal, newVal)
 
     switch (item.status) {
-      case "added":
-        if (isComplexChange && item.newValue && typeof item.newValue === "object") {
-          return [`Property '${propertyPath}' was added with value: [complex value]`];
+      case 'added':
+        if (isComplexObject) {
+          lines.push(`Property '${propertyPath}' was added with value: [complex value]`)
         } else {
-          return [`Property '${propertyPath}' was added with value: ${formatValue(item.newValue)}`];
+          lines.push(`Property '${propertyPath}' was added with value: ${formatValue(newVal)}`)
         }
+        break
 
-      case "removed":
-        return [`Property '${propertyPath}' was removed`];
+      case 'removed':
+        lines.push(`Property '${propertyPath}' was removed`)
+        break
 
-      case "changed":
-        if (
-          isComplexChange &&
-          item.value &&
-          typeof item.value === "object" &&
-          item.newValue &&
-          typeof item.newValue === "object"
-        ) {
-          const oldEntries = Object.entries(item.value);
-          const newEntries = Object.entries(item.newValue);
-          const newMap = Object.fromEntries(newEntries);
-          const linesArr = [];
-
-          for (const [k, v] of oldEntries) {
-            const newVal = newMap[k];
-            const nestedPath = `${propertyPath}.${k}`;
-            if (newVal !== undefined) {
-              // Обновление
-              linesArr.push(
-                `Property '${nestedPath}' was updated. From ${formatValue(v)} to ${formatValue(newVal)}`
-              );
-            } else {
-              // Значение удалено
-              linesArr.push(`Property '${nestedPath}' was removed`);
-            }
-          }
-
-          for (const [k, v] of newEntries) {
-            if (!Object.prototype.hasOwnProperty.call(item.value, k)) {
-              const nestedPath = `${propertyPath}.${k}`;
-              linesArr.push(`Property '${nestedPath}' was added with value: ${formatValue(v)}`);
-            }
-          }
-
-          return linesArr;
+      case 'changed':
+        if (valuesAreEqual) {
         } else {
-          // Простое обновление
-          return [
-            `Property '${propertyPath}' was updated. From ${formatValue(
-              item.value
-            )} to ${formatValue(item.newValue)}`
-          ];
-        }
+          if (
+            typeof valueVal === 'object' && valueVal !== null &&
+            typeof newVal === 'object' && newVal !== null
+          ) {
+            const oldEntries = Object.entries(valueVal)
+            const newEntries = Object.entries(newVal)
+            const newMap = Object.fromEntries(newEntries)
 
-      case "unchanged":
-        return []; // ничего не добавляем
-      default:
-        return [];
+            for (const [k, v] of oldEntries) {
+              const newV = newMap[k]
+              const nestedPath = `${propertyPath}.${k}`
+
+              if (newV !== undefined) {
+                lines.push(`Property '${nestedPath}' was updated. From ${formatValue(v)} to ${formatValue(newV)}`)
+              } else {
+                lines.push(`Property '${nestedPath}' was removed`)
+              }
+            }
+
+            for (const [k, v] of newEntries) {
+              if (!Object.prototype.hasOwnProperty.call(valueVal, k)) {
+                const nestedPath = `${propertyPath}.${k}`
+                lines.push(`Property '${nestedPath}' was added with value: ${formatValue(v)}`)
+              }
+            }
+          } else {
+            lines.push(`Property '${propertyPath}' was updated. From ${formatValue(valueVal)} to ${formatValue(newVal)}`);
+          }
+        }
+        break
+
+      case 'unchanged':
+        break
     }
-  });
-  lines.push(...newLines);
-  return lines.join('\n');
+  }
+
+  return lines.join('\n')
 }
 
 export default formPlain
